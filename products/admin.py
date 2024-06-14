@@ -12,10 +12,10 @@ class ProductAdmin(admin.ModelAdmin):
         'rating',
         'image',
     )
-#  ordering by 'sku', must be a tuple as possible to sort on multiple cols. to reverse order put - in front of 'sku'
+
     ordering = ('sku',)
 
-class CategoryAdmin(admin.ModelAdmin): #  extends the built in ModelAdmin class
+class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         'friendly_name',
         'name',
