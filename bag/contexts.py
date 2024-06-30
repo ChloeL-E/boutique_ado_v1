@@ -31,7 +31,7 @@ def bag_contents(request):
                 product_count += quantity # Update Product Count: It increments the product_count by the quantity for each size
                 bag_items.append({ # Append to Bag Items: It appends a dictionary containing the item_id, quantity, product, and size to the bag_items list.
                     'item_id': item_id,
-                    'quantity': item_data,
+                    'quantity': quantity,
                     'product': product,
                     'size': size,
                 })
