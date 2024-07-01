@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse, HttpResponse
 
 # Create your views here.
 
@@ -44,3 +44,57 @@ def add_to_bag(request, item_id): # form to add_to_bag in product_details.html s
     request.session['bag'] = bag
     return redirect(redirect_url)
 
+
+def adjust_bag(request, item_id): 
+    '''
+    Adjust the quantity of the specified product to the specified amount
+    '''
+
+    quantity = int(request.POST.get('quantity'))
+    size = None
+    if 'product_size' in request.POST:
+        size = request.POST['product_size']
+    # to store the contents of the shopping bag in the http so the contents persist whilst the user shops within site without losing content of bag
+    bag = request.session.get('bag', {}) #  variable to access the requests session, trying to get the variable 'bag' if it already exists or initializing to an empty dictionary if none exists
+
+    if size:
+        if quantity > 0:
+            bag[item_id]["items_by_size"][size] = quantity
+        else:
+            del bag[item_id]["items_by_size"][size]
+            if not bag[item_id]["items_by_size"]:
+                bag.pop(item_id)
+    else:  # without size
+        if quantity > 0:
+            bag[item_id] = quantity
+        else:
+            bag.pop(item_id)  # Item Doesn't Exist: Add the item with the specified quantity.
+    
+    request.session['bag'] = bag
+    return redirect(reverse('view_bag'))
+
+
+def remove_from_bag(request, item_id): 
+    '''
+    Adjust the quantity of the specified product to the specified amount
+    '''
+
+    try:
+        size = None
+        if 'product_size' in request.POST:
+            size = request.POST['product_size']
+     # to store the contents of the shopping bag in the http so the contents persist whilst the user shops within site without losing content of bag
+        bag = request.session.get('bag', {}) #  variable to access the requests session, trying to get the variable 'bag' if it already exists or initializing to an empty dictionary if none exists
+
+        if size:
+            del bag[item_id]["items_by_size"][size]
+            if not bag[item_id]["items_by_size"]:
+                bag.pop(item_id)
+            else:
+                bag.pop(item_id)  # Item Doesn't Exist: Add the item with the specified quantity.
+    
+        request.session['bag'] = bag
+        return HttpResponse(status=200)
+    
+    except Exception as e:
+        return HttpResponse(status=500)
