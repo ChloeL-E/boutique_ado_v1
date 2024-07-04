@@ -48,7 +48,11 @@ def checkout(request):
         }
         order_form = OrderForm(form_data)
         if order_form.is_valid():
-            order = order_form.save()
+            order = order_form.save(commit=False) # prevents multiple save events which helps optimization, so first order isnt executed on database
+            pid = request.POST.get('client_secret').split('_secret')[0] # payment intent id
+            order.stripe_pid = pid
+            order.orginal_bag = json.dumps(bag) # we already have the shoppping bag so dump it to a json string, set it to the order and save to the order
+            order.save()
             for item_id, item_data in bag.items():
                 try:
                     product = Product.objects.get(id=item_id)
