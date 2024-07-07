@@ -20,20 +20,20 @@ class OrderForm(forms.ModelForm):
             'full_name': 'Full Name',
             'email': 'Email Address',
             'phone_number': 'Phone Number',
-            'country': 'Country',
             'postcode': 'Postal Code',
             'town_or_city': 'Town or City',
             'street_address1': 'Street Address 1',
             'street_address2': 'Street Address 2',
-            'county': 'County',
+            'county': 'County, State or Locality',
         }
 
         self.fields['full_name'].widget.attrs['autofocus'] = True  # cursor will start in the full name field when user comes to page
         for field in self.fields: # iterate through form fields
-            if self.fields[field].required:
-                placeholder = f'{placeholders[field]} *' # add an asterix to all form fields set to required on the model
-            else:
-                placeholder = placeholders[field]
-            self.fields[field].widget.attrs['placeholder'] = placeholder # setting all the placeholder attributed to the value in the dictionary above
-            self.fields[field].widget.attrs['class'] = 'stripe-style-input' # adding a css class
-            self.fields[field].label = False # removing the form fields labels as the placeholders are now set
+            if field != 'country': # as don't need a placeholder in this dropdown 
+                if self.fields[field].required:
+                    placeholder = f'{placeholders[field]} *' # add an asterix to all form fields set to required on the model
+                else:
+                    placeholder = placeholders[field]
+                self.fields[field].widget.attrs['placeholder'] = placeholder # setting all the placeholder attributed to the value in the dictionary above
+                self.fields[field].widget.attrs['class'] = 'stripe-style-input' # adding a css class
+                self.fields[field].label = False # removing the form fields labels as the placeholders are now set
