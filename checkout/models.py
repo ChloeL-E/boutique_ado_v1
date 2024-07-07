@@ -7,10 +7,13 @@ from django.conf import settings
 from django_countries.fields import CountryField  # django countries package
 
 from products.models import Product
+from profiles.models import UserProfile
 
 
 class Order(models.Model):
     order_number = models.CharField(max_length=32, null=False, editable=False)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, # this means that we can keep an order history even if the user profile is deleted
+                                     null=True, blank=True, related_name='orders') # null/blank=true so that ppl without a user profile can still place orders.
     full_name = models.CharField(max_length=50, null=False, blank=False)
     email = models.EmailField(max_length=254, null=False, blank=False)
     phone_number = models.CharField(max_length=20, null=False, blank=False)
