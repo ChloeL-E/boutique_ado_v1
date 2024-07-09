@@ -207,7 +207,7 @@ input[name='q']::placeholder {
 .allauth-form-inner-content button,
 .allauth-form-inner-content input[type='submit'] {
 	/* btn */
-	display: inline-block;
+	display: inline-block; 
     font-weight: 400;
     color: #fff;
     text-align: center;
