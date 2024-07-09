@@ -1,3 +1,8 @@
+.order-history {
+    max-height: 416px; /* height of proile form + submit button */
+    overflow-y: auto; /* scroll bar if order list is longer than 416px */
+}
+
 #profile-update-form .form-control {
     color: #000;
 }
