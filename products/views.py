@@ -6,7 +6,7 @@ from django.db.models.functions import Lower
 from .models import Product, Category
 from .forms import ProductForm
 
-# Create your views here.
+# for store owners..
 
 def all_products(request):
     """ A view to show all products, including sorting and search queries """
@@ -75,9 +75,9 @@ def add_product(request):
     if request.method == 'POST':  
         form = ProductForm(request.POST, request.FILES) # create a new instance of the product form from request.POSt and include request.files to ensure we capture the image of the product if one was submitted
         if form.is_valid():
-            form.save()  # if form is valid, save and add success message
+            product = form.save()  # if form is valid, save to new variable and add success message
             messages.success(request, 'Successfully added product!')
-            return redirect(reverse('add_product'))  # redirect to the same view
+            return redirect(reverse('product_detail', args=[product.id]))  # redirect to the product details page using the product variable above
         else:
             messages.error(request, 'Failed to add product. Please ensure the form is valid.')  # if any form errors attach an error message asking user to recheck the form
     else:
@@ -87,4 +87,36 @@ def add_product(request):
         'form': form,
     }
 
-    return render(request, template, context)  
+    return render(request, template, context) 
+
+
+def edit_product(request, product_id):
+    """ Edit a product in the store """
+    product = get_object_or_404(Product, pk=product_id) # get the product by id
+    if request.method == 'POST': 
+        form = ProductForm(request.POST, request.FILES, instance=product) # instanciate a form and tell it that the instance is using the product obtained above
+        if form.is_valid():  # if valid, save and add success message
+            form.save()
+            messages.success(request, 'Successfully updated product!')
+            return redirect(reverse('product_detail', args=[product.id])) # redirect to product detail page using product id
+        else:
+            messages.error(request, 'Failed to update product. Please ensure the form is valid.') # otherwise error message
+    else:
+        form = ProductForm(instance=product) # instance of the product form using the product
+        messages.info(request, f'You are editing {product.name}') # message informing user they are editing a product
+
+    template = 'products/edit_product.html' # tell it which template to use
+    context = {  
+        'form': form,
+        'product': product, # which products to go in the template
+    }
+
+    return render(request, template, context)
+
+
+def delete_product(request, product_id):
+    """ Delete a product from the store """
+    product = get_object_or_404(Product, pk=product_id) # get product by id
+    product.delete() # delete
+    messages.success(request, 'Product deleted!') # successful deletion
+    return redirect(reverse('products')) # redirect to products page
