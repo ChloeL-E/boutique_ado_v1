@@ -28,7 +28,13 @@
                 <p class="text-muted">Default Delivery Information</p>
                 <form class="mt-3" action="{% url 'profile' %}" method="POST" id="profile-update-form">
                     {% csrf_token %}
-                    {{ form|crispy }}
+                    {% for field in form %}  <!--renders the coutry field but with none of our site styling- this needs to be added-->
+                        {% if field.name != 'default_country' %}
+                            {{ field | as_crispy_field }}
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    {% endfor %}
                     <button class="btn btn-black rounded-0 text-uppercase float-right">Update Information</button>
                 </form>
             </div>

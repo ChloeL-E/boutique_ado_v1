@@ -25,7 +25,13 @@
             <div class="col-12 col-md-6">
                 <form method="POST" action="{% url 'add_product' %}" class="form mb-2" enctype="multipart/form-data"> <!--encoding type attricute as potentially submitting an image file and image potentially owont upload properly without-->
                     {% csrf_token %}
-                    {{ form | crispy }} <!--crispy form--> 
+                    {% for field in form %} <!--crispy form--> 
+                        {% if field.name != 'image' %} <!-- so image renders without the unnecessary 'Image label'-->
+                            {{ field | as_crispy_field }}
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    {% endfor %} 
                     <div class="text-right"> <!-- buttons aligned at the bottom right of form-->
                         <a class="btn btn-outline-black rounded-0" href="{% url 'products' %}">Cancel</a> <!--cancel button to go back to the products page-->
                         <button class="btn btn-black rounded-0" type="submit">Add Product</button> <!--submit button-->
@@ -34,4 +40,14 @@
             </div>            
         </div>
     </div>
+{% endblock %}
+
+{% block postloadjs %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $('#new-image').change(function() {
+            var file = $('#new-image')[0].files[0];
+            $('#filename').text(`Image will be set to: ${file.name}`);
+        });
+    </script>
 {% endblock %}
