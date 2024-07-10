@@ -152,7 +152,7 @@ def checkout_success(request, order_number):
         # Save the user's info using the save_info box
         if save_info:
             profile_data = { # create a dictionary of profile data
-                'default_phone_n mber': order.phone_number, # keys match that of the UserProfile model
+                'default_phone_number': order.phone_number, # keys match that of the UserProfile model
                 'default_country': order.country,
                 'default_postcode': order.postcode,
                 'default_town_or_city': order.town_or_city,

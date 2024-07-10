@@ -2,6 +2,7 @@ from django.http import HttpResponse
 
 from .models import Order, OrderLineItem
 from products.models import Product
+from profiles.models import UserProfile
 
 import json # from python
 import time # from python
@@ -43,6 +44,21 @@ class StripeWH_Handler:
         for field, value in shipping_details.address.items(): # to ensure the data is in the same form as in the datatabase
             if value == "": # replace the empty strings in the shipping details with None as stripe with store them as strings rather than the Null values in the database
                 shipping_details.address[field] = None
+        
+        # Update profile information if save_info was checked
+        profile = None
+        username = intent.metadata.username # using the 'meta' key in the payment intent contains the username of the user that placed the oreder and whether or not they wanted to save their profle
+        if username != 'AnonymousUser': # still allow anonymous users to checkout
+            profile = UserProfile.objects.get(user__username=username) # get their profile using their username
+            if save_info: # if they have the save info box checked then udated their shipping details as their defaukt delivery info
+                profile.default_phone_number = shipping_details.phone
+                profile.default_country = shipping_details.address.country
+                profile.default_postcode = shipping_details.address.postal_code
+                profile.default_town_or_city = shipping_details.address.city
+                profile.default_street_address1 = shipping_details.address.line1
+                profile.default_street_address2 = shipping_details.address.line2
+                profile.default_county = shipping_details.address.state
+                profile.save() # save the profile
 
         order_exists = False # if the order doesnt exist...
         attempt = 1 # try to get the order using all the info from the payment intent
@@ -72,10 +88,11 @@ class StripeWH_Handler:
                 content=f'Webhook received: {event["type"]} | SUCCESS: Verified order already in database',
                 status=200)
         else:
-            order = None # order not found by webhooks handler, create the order
+            order = None # order not found by webhooks handler, create the order for both aunthenicated and anponymous users
             try: 
                 order = Order.objects.create( # create form to save using the data in the payment intent
                     full_name=shipping_details.name,
+                    user_profile=profile,
                     email=billing_details.email,
                     phone_number=shipping_details.phone,
                     country=shipping_details.address.country,
