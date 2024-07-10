@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.db.models.functions import Lower
 
 from .models import Product, Category
 from .forms import ProductForm
 
-# for store owners..
 
 def all_products(request):
     """ A view to show all products, including sorting and search queries """
@@ -70,8 +70,14 @@ def product_detail(request, product_id):
     return render(request, 'products/product_detail.html', context)
 
 
+# for store owners..
+@login_required
 def add_product(request):
     """ Add a product to the store """
+    if not request.user.is_superuser:  # to ensure only shop owner i.e superuser can add products
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))  # redirect to home page with error message
+
     if request.method == 'POST':  
         form = ProductForm(request.POST, request.FILES) # create a new instance of the product form from request.POSt and include request.files to ensure we capture the image of the product if one was submitted
         if form.is_valid():
@@ -90,8 +96,13 @@ def add_product(request):
     return render(request, template, context) 
 
 
+@login_required
 def edit_product(request, product_id):
     """ Edit a product in the store """
+    if not request.user.is_superuser:  # to ensure only shop owner i.e superuser can add products
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))  # redirect to home page with error message
+        
     product = get_object_or_404(Product, pk=product_id) # get the product by id
     if request.method == 'POST': 
         form = ProductForm(request.POST, request.FILES, instance=product) # instanciate a form and tell it that the instance is using the product obtained above
@@ -114,8 +125,13 @@ def edit_product(request, product_id):
     return render(request, template, context)
 
 
+@login_required
 def delete_product(request, product_id):
     """ Delete a product from the store """
+    if not request.user.is_superuser:  # to ensure only shop owner i.e superuser can add products
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))  # redirect to home page with error message
+
     product = get_object_or_404(Product, pk=product_id) # get product by id
     product.delete() # delete
     messages.success(request, 'Product deleted!') # successful deletion
