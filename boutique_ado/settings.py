@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-ynl@p(@1_9nux70u@1-24a7o1atv*q&k2(l8qhkn)5rgtsu(e=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ALLOWED_HOSTS', 'localhost', '8000-chloele-boutiqueadov1-fez6oyme7v0.ws-eu115.gitpod.io', 'chloes-boutique.herokuapp.com']
+ALLOWED_HOSTS = ['ALLOWED_HOSTS', 'localhost', '8000-chloele-boutiqueadov1-fez6oyme7v0.ws-eu115.gitpod.io', 'chloes-boutique-d7d0a8d7f53b.herokuapp.com']
 
 # Application definition
 
